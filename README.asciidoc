@@ -1,0 +1,9 @@
+About
+=====
+
+Test code for using V2 (r450) of protobuf-net 
+
+See the https://github.com/mostlygeek/CSharp-Protocol-Buffer-Test/blob/master/Protobuf-Test/Main.cs[Protobuf-Test/Main.cs] file for code. 
+
+Proto-buf library from: http://code.google.com/p/protobuf-net/
+
