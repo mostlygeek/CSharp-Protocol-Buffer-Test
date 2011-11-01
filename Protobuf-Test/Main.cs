@@ -22,6 +22,7 @@ namespace ProtobufTest
                 , tFloat = 13141.023f
                 , name = "Ben"
                 , reallyBigInt = ulong.MaxValue
+                , myEnum = SomeValues.five
             };
 
             p.likedThings.Add("coffee"  , 100);
@@ -58,6 +59,10 @@ Other Likes
         }
     }
 
+    public enum SomeValues {
+        zero, one, two, tree, four, five
+    }
+
     [ProtoContract]
     public class Person
     {
@@ -85,6 +90,9 @@ Other Likes
         [ProtoMember(8)]
         public ulong reallyBigInt;
 
+        [ProtoMember(9)]
+        public SomeValues myEnum;
+
         public override string ToString()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -102,6 +110,8 @@ Other Likes
             {
                 sb.Append(string.Format(" - like2: {0} => {1}\n", lt.name, lt.vote));
             }
+
+            sb.Append("My Num: " + myEnum.ToString() + "\n");
 
             return sb.ToString();
         }
