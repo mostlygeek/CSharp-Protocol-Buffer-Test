@@ -15,14 +15,13 @@ namespace ProtobufTest
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             MemoryStream ms = new MemoryStream();
 
             Person p = new Person() {
                 id = int.MaxValue
                 , tFloat = 13141.023f
                 , name = "Ben"
+                , reallyBigInt = ulong.MaxValue
             };
 
             p.likedThings.Add("coffee"  , 100);
@@ -32,14 +31,30 @@ namespace ProtobufTest
             p.myLikes.Add(new LikedThing("one", 1));
             p.myLikes.Add(new LikedThing("two", 2));
 
-            p.randomData.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes("abcde"));
+            p.randomData.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes("abcde21300 9fa9j 12031"));
 
             Serializer.Serialize(ms, p);
             byte[] bin = ms.ToArray();
-            Console.WriteLine(string.Format("Size: {0}, bytes: {1}", bin.Length, BitConverter.ToString(bin)));
+            Console.WriteLine(string.Format("Size: {0}\nbytes: {1}", bin.Length, BitConverter.ToString(bin)));
 
             Person p2 = Serializer.Deserialize<Person>(new MemoryStream(bin));
             Console.WriteLine(p2);
+/*
+Output:
+
+Size: 137
+bytes: 08-FF-FF-FF-FF-07-12-03-42-65-6E-1D ....
+2147483647 : Ben
+Big Number: 18446744073709551615
+ - Likes: coffee x 100
+ - Likes: cookies x 599
+ - Likes: veggies x -100
+Byte Array: abcde21300 9fa9j 12031
+Other Likes
+ - like2: one => 1
+ - like2: two => 2
+ 
+ */
         }
     }
 
@@ -65,13 +80,16 @@ namespace ProtobufTest
         public List<byte> randomData = new List<byte>();
 
         [ProtoMember(7)]
-
         public List<LikedThing> myLikes = new List<LikedThing>();
+
+        [ProtoMember(8)]
+        public ulong reallyBigInt;
 
         public override string ToString()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.Append(string.Format("{0} : {1}\n", this.id, this.name));
+            sb.Append(string.Format("Big Number: {0}\n", reallyBigInt));
             foreach (KeyValuePair<string, int> kvp in likedThings)
             {
                 sb.Append(string.Format(" - Likes: {0} x {1}\n", kvp.Key, kvp.Value));
@@ -79,6 +97,7 @@ namespace ProtobufTest
 
             sb.Append("Byte Array: " + System.Text.ASCIIEncoding.ASCII.GetString(randomData.ToArray()) + "\n");
 
+            sb.Append("Other Likes\n");
             foreach (LikedThing lt in myLikes)
             {
                 sb.Append(string.Format(" - like2: {0} => {1}\n", lt.name, lt.vote));
